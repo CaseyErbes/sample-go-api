@@ -4,7 +4,7 @@ CREATE TABLE address (
     id              uuid PRIMARY KEY NOT NULL,
     firstname       varchar(128),
     lastname        varchar(128),
-    email           varchar(256) NOT NULL,
+    email           varchar(256) UNIQUE NOT NULL,
     phonenumber     varchar(15) NOT NULL
 );
 
