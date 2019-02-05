@@ -39,7 +39,7 @@ This project uses a makefile, so make should be installed. Here's how:
 sudo apt-get install make
 ```
 
-Next, PostgreSQL must be installed. If you are using Ubuntu, it can be installed with the following script:
+Next PostgreSQL must be installed. If you are using Ubuntu, it can be installed with the following script:
 ```shell
 sudo apt-get install postgresql postgresql-contrib
 ```
@@ -49,30 +49,31 @@ Make sure PostgreSQL is running with this script:
 sudo service postgresql start
 ```
 
-Then configure the postgres user password:
+Then configure the postgres user password to be 'postgres' which is what the project expects:
 ```shell
 sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"
 ```
+
+# Creating the Database
 
 Next, use the _init-db.sh_ script at the root of the project to initialize the databases that this project uses, like so:
 ```shell
 ./init-db.sh
 ```
-
 This can be run any time you feel like resetting this project's databases.
-
-Next, this project uses some go dependencies. The makefile has a list of all of the dependencies needed. To install them, run:
-```shell
-make deps
-```
 
 ## Configuring the Environment
 
 The environment must be configured before the server or any tests can be run.
 
-Source the _env.sh_ script to configure GOPATH to include this project. This will also include env vars that will be used to access the database.
+Source the _env.sh_ script to configure GOPATH to include this project. This will also include env vars that will be used to access the database. It is a good idea to source env.sh before running any of the go code in this project.
 ```shell
 source env.sh
+```
+
+Next, this project uses some go dependencies. The makefile has a list of all of the dependencies needed. To install them, run:
+```shell
+make deps
 ```
 
 This project uses _goose_ to manage migrations. Run this to add migrations to the database:
@@ -92,3 +93,5 @@ To start a server instance, run:
 make runserver
 ```
 It will serve on localhost:8888. You can use Postman or cURL to call its APIs and make persistent changes to the database.
+
+If you want to get rid of all your changes and start with a clean db, run _init_db.sh_ and you'll have a fresh database again. Keep in mind that you will have to run the migration again to re-initialize the address table.
