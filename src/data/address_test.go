@@ -8,8 +8,8 @@ import (
 
 // TestAddressDataFunc1 tests the capability to create, get all, get individual, update, and delete addresses
 func TestAddressDataFunc1(t *testing.T) {
-	InitTestDb()
-	defer CleanupTestDb()
+	dbCleanup := InitTestDb()
+	defer dbCleanup()
 
 	// create the new address
 	firstName, lastName, email, phoneNumber := "Mister", "Test", "mistertest@example.com", "123-456-7890"
@@ -57,8 +57,8 @@ func TestAddressDataFunc1(t *testing.T) {
 // TestAddressDataFunc2 tests the capability to create a large quantity of addresses,
 // get them all, and then delete them all
 func TestAddressDataFunc2(t *testing.T) {
-	InitTestDb()
-	defer CleanupTestDb()
+	dbCleanup := InitTestDb()
+	defer dbCleanup()
 
 	var createdAddressIds []AddressId
 

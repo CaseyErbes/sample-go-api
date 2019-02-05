@@ -9,7 +9,6 @@ import (
 )
 
 var db *sql.DB
-var bTestDb bool = false
 
 const (
 	dbhost     = "DBHOST"
@@ -21,7 +20,7 @@ const (
 )
 
 // set up app db connection
-func InitDb() *sql.DB {
+func InitDb() func() {
 	dbConfig := dbConfig()
 	var err error
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
@@ -35,11 +34,14 @@ func InitDb() *sql.DB {
 	if err != nil {
 		panic(err)
 	}
-	return db
+	return func() {
+		// defer close db
+		db.Close()
+	}
 }
 
 // set up test db connection
-func InitTestDb() *sql.DB {
+func InitTestDb() func() {
 	dbConfig := dbConfig()
 	var err error
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
@@ -53,21 +55,14 @@ func InitTestDb() *sql.DB {
 	if err != nil {
 		panic(err)
 	}
-	bTestDb = true
-	return db
-}
-
-// clean up test db
-func CleanupTestDb() {
-	if !bTestDb {
-		return
+	return func() {
+		// clean up test db
+		statementStr := `TRUNCATE address CASCADE`
+		_, err := db.Exec(statementStr)
+		if err != nil {
+			panic(err)
+		}
 	}
-	statementStr := `TRUNCATE address CASCADE`
-	_, err := db.Exec(statementStr)
-	if err != nil {
-		panic(err)
-	}
-	bTestDb = false
 }
 
 // load db config values from env

@@ -95,8 +95,8 @@ func deleteAddress(t *testing.T, baseUrl string, addressIdStr string) {
 
 // TestAddressHttpFunc1 tests the capability to create, get all, get individual, update, and delete addresses
 func TestAddressHttpFunc1(t *testing.T) {
-	data.InitTestDb()
-	defer data.CleanupTestDb()
+	dbCleanup := data.InitTestDb()
+	defer dbCleanup()
 
 	ts := httptest.NewServer(CreateRouterHandler())
 	defer ts.Close()
@@ -141,8 +141,8 @@ func TestAddressHttpFunc1(t *testing.T) {
 // TestAddressHttpFunc2 tests the capability to create a large quantity of addresses,
 // get them all, and then delete them all
 func TestAddressHttpFunc2(t *testing.T) {
-	data.InitTestDb()
-	defer data.CleanupTestDb()
+	dbCleanup := data.InitTestDb()
+	defer dbCleanup()
 
 	ts := httptest.NewServer(CreateRouterHandler())
 	defer ts.Close()

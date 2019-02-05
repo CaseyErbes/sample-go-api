@@ -44,8 +44,8 @@ func postAddressCsv(t *testing.T, baseUrl string, fileName string) {
 
 // TestGetAddressCsv tests generating a csv listing all address entries
 func TestGetAddressCsv(t *testing.T) {
-	data.InitTestDb()
-	defer data.CleanupTestDb()
+	dbCleanup := data.InitTestDb()
+	defer dbCleanup()
 
 	ts := httptest.NewServer(CreateRouterHandler())
 	defer ts.Close()
@@ -71,8 +71,8 @@ func TestGetAddressCsv(t *testing.T) {
 
 // TestPostAddressCsv1 tests uploading a csv listing all address entries into the database
 func TestPostAddressCsv1(t *testing.T) {
-	data.InitTestDb()
-	defer data.CleanupTestDb()
+	dbCleanup := data.InitTestDb()
+	defer dbCleanup()
 
 	ts := httptest.NewServer(CreateRouterHandler())
 	defer ts.Close()
@@ -81,23 +81,23 @@ func TestPostAddressCsv1(t *testing.T) {
 	postAddressCsv(t, ts.URL, "test1.csv") // file contains 100 entries
 
 	// count the new number of addresses
-        addressSlice := getAllAddresses(t, ts.URL)
-        assert.True(t, len(addressSlice) == 100)
+	addressSlice := getAllAddresses(t, ts.URL)
+	assert.True(t, len(addressSlice) == 100)
 }
 
 // TestPostAddressCsv2 tests uploading a csv listing all address entries into the database,
 // but this time the lastName col comes before the firstName col in the csv
 func TestPostAddressCsv2(t *testing.T) {
-        data.InitTestDb()
-        defer data.CleanupTestDb()
+	dbCleanup := data.InitTestDb()
+	defer dbCleanup()
 
-        ts := httptest.NewServer(CreateRouterHandler())
-        defer ts.Close()
+	ts := httptest.NewServer(CreateRouterHandler())
+	defer ts.Close()
 
-        // post csv file containing address entries
-        postAddressCsv(t, ts.URL, "test2.csv") // file contains 100 entries
+	// post csv file containing address entries
+	postAddressCsv(t, ts.URL, "test2.csv") // file contains 100 entries
 
-        // count the new number of addresses
-        addressSlice := getAllAddresses(t, ts.URL)
-        assert.True(t, len(addressSlice) == 100)
+	// count the new number of addresses
+	addressSlice := getAllAddresses(t, ts.URL)
+	assert.True(t, len(addressSlice) == 100)
 }
