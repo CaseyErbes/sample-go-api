@@ -29,6 +29,11 @@ Before running this project, there are a few dependencies that must be installed
 
 First of all, Go should be installed on your machine. I will assume this step has already been completed. If not, you can learn how to get started with go [here](https://golang.org/doc/install).
 
+Go requires gcc, so it should be installed:
+```shell
+sudo apt-get install gcc
+```
+
 This project uses a makefile, so make should be installed. Here's how:
 ```shell
 sudo apt-get install make
