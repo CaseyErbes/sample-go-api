@@ -76,7 +76,7 @@ Next, this project uses some go dependencies. The makefile has a list of all of 
 make deps
 ```
 
-This project uses _goose_ to manage migrations. Run this to add migrations to the database:
+This project uses _goose_ to manage migrations. The project will not work if the latest migration is not applied. Run this to perfomr migrations to the database:
 ```shell
 make build
 ```
