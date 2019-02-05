@@ -1,7 +1,85 @@
-install postgresql: brew install postgresql / apt-get install postgresql postgresql-contrib
+# Sample Go Web Service
 
-start postgresql: brew services start postgresql / service postgresql start
+This repository contains a web service written in Go that uses a PostgreSQL database.
 
+It was designed to accommodate the following user story enumerating a list of requirements.
+
+## Requirements
+
+> * As a user I need an online address book exposed as a REST API.  I need the data set to include the following data fields: 
+First Name, Last Name, Email Address, and Phone Number
+> * I need the api to follow standard rest semantics to support listing entries, showing a specific single entry, and adding, modifying, and deleting entries.  
+> * The code for the address book should include regular go test files that demonstrate how to exercise all operations of the service.  
+> * Finally I need the service to provide endpoints that can export and import the address book data in a CSV format. 
+
+## Database Design
+
+To implement this design, I designed a simple database containing a single table that uses the following fields:
+* id - a uuid used to uniquely identify address entries
+* firstname
+* lastname
+* email
+* phonenumber
+
+I assumed that only id and email would be unique fields, as all the other fields could possibly be shared between people.
+
+## Dependencies
+
+Before running this project, there are a few dependencies that must be installed on your machine.
+
+First of all, Go should be installed on your machine. I will assume this step has already been completed. If not, you can learn how to get started with go [here](https://golang.org/doc/install).
+
+Next, PostgreSQL must be installed. If you are using ubuntu, it can be installed with the following script:
+```shell
+sudo apt-get install postgresql postgresql-contrib
+```
+
+Make sure PostgreSQL is running with this script:
+```shell
+sudo service postgresql start
+```
+
+If you are using a mac, install PostgreSQL with brew and get it running with these two lines:
+```shell
+brew install postgresql
+brew services start postgresql
+```
+
+Next, use the _init-db.sh_ script at the root of the project to initialize the databases that this project uses, like so:
+```shell
+./init-db.sh
+```
+
+This can be run anytime you feel like resetting this project's databases.
+
+Next, this project uses some go dependencies. The makefile has a list of all of the dependencies needed. To install them, run:
+```shell
+make deps
+```
+
+## Configuring the Environment
+
+The environment must be configured before the server or any tests can be run.
+
+Source the _env.sh_ script to configure GOPATH to include this project. This will also include env vars that will be used to access the database.
+```shell
 source env.sh
+```
 
-env.sh and make build need to be run before data tests can be run
+This project uses _goose_ to manage migrations. Run this to add migrations to the database:
+```shell
+make build
+```
+This will also build the project.
+
+To run all tests in this project, run:
+```shell
+make test
+```
+The tests are set up to erase all db changes they have made after running.
+
+To start a server instance, run:
+```shell
+make runserver
+```
+It will serve on localhost:8888. You can use Postman or cURL to call its APIs and make persistent changes to the database.
