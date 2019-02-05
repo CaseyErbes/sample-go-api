@@ -29,6 +29,11 @@ Before running this project, there are a few dependencies that must be installed
 
 First of all, Go should be installed on your machine. I will assume this step has already been completed. If not, you can learn how to get started with go [here](https://golang.org/doc/install).
 
+This project uses a makefile, so make should be installed. Here's how:
+```shell
+sudo apt-get install make
+```
+
 Next, PostgreSQL must be installed. If you are using ubuntu, it can be installed with the following script:
 ```shell
 sudo apt-get install postgresql postgresql-contrib
