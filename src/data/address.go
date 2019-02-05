@@ -77,30 +77,30 @@ func GetAllAddresses() ([]Address, error) {
 
 func GetAddress(addressId AddressId) (*Address, error) {
 	address := new(Address)
-        queryStr := `SELECT id, firstname, lastname, email, phoneNumber FROM address
+	queryStr := `SELECT id, firstname, lastname, email, phoneNumber FROM address
 		WHERE id = $1`
-        rows, err := db.Query(queryStr, string(addressId))
-        if err != nil {
-                return new(Address), addressGetQueryError
-        }
-        defer rows.Close()
-        for rows.Next() {
-                var addressIdStr, firstName, lastName, email, phoneNumber string
-                err = rows.Scan(&addressIdStr, &firstName, &lastName, &email, &phoneNumber)
-                if err != nil {
-                        return new(Address), addressGetRowScanError
-                }
-                address.AddressId = AddressId(addressIdStr)
-                address.FirstName = firstName
-                address.LastName = lastName
-                address.Email = email
-                address.PhoneNumber = phoneNumber
-        }
-        err = rows.Err()
-        if err != nil {
-                return new(Address), addressGetAllRowsError
-        }
-        return address, nil
+	rows, err := db.Query(queryStr, string(addressId))
+	if err != nil {
+		return new(Address), addressGetQueryError
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var addressIdStr, firstName, lastName, email, phoneNumber string
+		err = rows.Scan(&addressIdStr, &firstName, &lastName, &email, &phoneNumber)
+		if err != nil {
+			return new(Address), addressGetRowScanError
+		}
+		address.AddressId = AddressId(addressIdStr)
+		address.FirstName = firstName
+		address.LastName = lastName
+		address.Email = email
+		address.PhoneNumber = phoneNumber
+	}
+	err = rows.Err()
+	if err != nil {
+		return new(Address), addressGetAllRowsError
+	}
+	return address, nil
 }
 
 func UpdateAddress(addressId AddressId, firstName string, lastName string, email string, phoneNumber string) error {
@@ -111,27 +111,27 @@ func UpdateAddress(addressId AddressId, firstName string, lastName string, email
 	// if empty, email will not be updated
 	if len(email) == 0 {
 		email = currentAddress.Email
-        }
+	}
 	// if empty, phonenumber will not be updated
-        if len(phoneNumber) == 0 {
+	if len(phoneNumber) == 0 {
 		phoneNumber = currentAddress.PhoneNumber
-        }
+	}
 	statementStr := `UPDATE address SET
 		firstname = $2, lastname = $3, email = $4, phoneNumber = $5
         	WHERE id = $1`
-        _, err = db.Exec(statementStr, string(addressId), firstName, lastName, email, phoneNumber)
-        if err != nil {
-                return addressUpdateStatementError
-        }
-        return nil
+	_, err = db.Exec(statementStr, string(addressId), firstName, lastName, email, phoneNumber)
+	if err != nil {
+		return addressUpdateStatementError
+	}
+	return nil
 }
 
 func DeleteAddress(addressId AddressId) error {
 	statementStr := `DELETE FROM address
         	WHERE id = $1`
-        _, err := db.Exec(statementStr, string(addressId))
-        if err != nil {
-                return addressDeleteStatementError
-        }
-        return nil
+	_, err := db.Exec(statementStr, string(addressId))
+	if err != nil {
+		return addressDeleteStatementError
+	}
+	return nil
 }

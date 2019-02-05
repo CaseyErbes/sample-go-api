@@ -7,3 +7,4 @@ export DBPORT=5432
 export DBUSER=postgres
 export DBPASS=postgres
 export DBNAME=postgres_db
+export TESTDBNAME=postgres_test_db

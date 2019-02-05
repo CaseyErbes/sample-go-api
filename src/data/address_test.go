@@ -1,25 +1,26 @@
 package data
 
 import (
-	"testing"
+	"fmt"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-// TestAddressFunc1 tests the capability to create, get all, get individual, update, and delete addresses
-func TestAddressFunc1(t *testing.T) {
-	InitDb()
-	// count the number addresses to start out with
-	addressSlice, err := GetAllAddresses()
-        assert.Nil(t, err)
-	initialAddressCount := len(addressSlice)
+// TestAddressDataFunc1 tests the capability to create, get all, get individual, update, and delete addresses
+func TestAddressDataFunc1(t *testing.T) {
+	InitTestDb()
+	defer CleanupTestDb()
+
 	// create the new address
 	firstName, lastName, email, phoneNumber := "Mister", "Test", "mistertest@example.com", "123-456-7890"
 	addressId, err := CreateAddress(firstName, lastName, email, phoneNumber)
 	assert.Nil(t, err)
+
 	// count the new number of addresses
-	addressSlice, err = GetAllAddresses()
+	addressSlice, err := GetAllAddresses()
 	assert.Nil(t, err)
-	assert.True(t, len(addressSlice) == initialAddressCount+1)
+	assert.True(t, len(addressSlice) == 1)
+
 	// get the newly created address and check its properties
 	address, err := GetAddress(addressId)
 	assert.Nil(t, err)
@@ -28,60 +29,61 @@ func TestAddressFunc1(t *testing.T) {
 	assert.True(t, address.LastName == lastName)
 	assert.True(t, address.Email == email)
 	assert.True(t, address.PhoneNumber == phoneNumber)
+
 	// update the address
 	newFirstName := "Doctor"
-	err = UpdateAddress(addressId, newFirstName, lastName, "", "")
-        assert.Nil(t, err)
+	err = UpdateAddress(addressId, newFirstName, lastName, "", "") // demonstrate that empty strings will not update the address entry
+	assert.Nil(t, err)
+
 	// check that the address has the updated property
 	address, err = GetAddress(addressId)
 	assert.Nil(t, err)
-        assert.True(t, address.AddressId == addressId)
-        assert.True(t, address.FirstName == newFirstName)
-        assert.True(t, address.LastName == lastName)
-        assert.True(t, address.Email == email)
-        assert.True(t, address.PhoneNumber == phoneNumber)
+	assert.True(t, address.AddressId == addressId)
+	assert.True(t, address.FirstName == newFirstName)
+	assert.True(t, address.LastName == lastName)
+	assert.True(t, address.Email == email)
+	assert.True(t, address.PhoneNumber == phoneNumber)
+
 	// delete the address created in this test
 	err = DeleteAddress(addressId)
 	assert.Nil(t, err)
+
+	// verify that we have the same number of addresses as we started with
+	addressSlice, err = GetAllAddresses()
+	assert.Nil(t, err)
+	assert.True(t, len(addressSlice) == 0)
 }
 
-// TestAddressFunc2 tests the capability to create a large quantity of addresses,
+// TestAddressDataFunc2 tests the capability to create a large quantity of addresses,
 // get them all, and then delete them all
-func TestAddressFunc2(t *testing.T) {
-        InitDb()
+func TestAddressDataFunc2(t *testing.T) {
+	InitTestDb()
+	defer CleanupTestDb()
+
 	var createdAddressIds []AddressId
-        // count the number addresses to start out with
-        addressSlice, err := GetAllAddresses()
-        assert.Nil(t, err)
-        initialAddressCount := len(addressSlice)
-        // create 5 new address
-        firstName, lastName, email, phoneNumber := "Mister", "Test", "mistertest1@example.com", "123-456-7890"
-        addressId, err := CreateAddress(firstName, lastName, email, phoneNumber)
-        assert.Nil(t, err)
-	createdAddressIds = append(createdAddressIds, addressId)
-        email = "mistertest2@example.com"
-        addressId, err = CreateAddress(firstName, lastName, email, phoneNumber)
-        assert.Nil(t, err)
-	createdAddressIds = append(createdAddressIds, addressId)
-        email = "mistertest3@example.com"
-        addressId, err = CreateAddress(firstName, lastName, email, phoneNumber)
-        assert.Nil(t, err)
-	createdAddressIds = append(createdAddressIds, addressId)
-        email = "mistertest4@example.com"
-        addressId, err = CreateAddress(firstName, lastName, email, phoneNumber)
-        assert.Nil(t, err)
-	createdAddressIds = append(createdAddressIds, addressId)
-        email = "mistertest5@example.com"
-        addressId, err = CreateAddress(firstName, lastName, email, phoneNumber)
-        assert.Nil(t, err)
-	createdAddressIds = append(createdAddressIds, addressId)
-        // count the new number of addresses
-        addressSlice, err = GetAllAddresses()
-        assert.Nil(t, err)
-        assert.True(t, len(addressSlice) == initialAddressCount+5)
+
+	// create 100 new addresses
+	newAddressCount := 100
+	for i := 1; i <= newAddressCount; i++ {
+		firstName, lastName, email, phoneNumber := "Mister", "Test", fmt.Sprintf("mistertest%v@example.com", i), "123-456-7890"
+		addressId, err := CreateAddress(firstName, lastName, email, phoneNumber)
+		assert.Nil(t, err)
+		createdAddressIds = append(createdAddressIds, addressId)
+	}
+
+	// count the new number of addresses
+	addressSlice, err := GetAllAddresses()
+	assert.Nil(t, err)
+	assert.True(t, len(addressSlice) == newAddressCount)
+
 	// delete all the created addresses
 	for _, addressId := range createdAddressIds {
 		err = DeleteAddress(addressId)
 		assert.Nil(t, err)
 	}
+
+	// verify that we have zero addresses after deleting
+	addressSlice, err = GetAllAddresses()
+	assert.Nil(t, err)
+	assert.True(t, len(addressSlice) == 0)
 }

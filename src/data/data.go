@@ -9,13 +9,15 @@ import (
 )
 
 var db *sql.DB
+var bTestDb bool = false
 
 const (
-	dbhost = "DBHOST"
-	dbport = "DBPORT"
-	dbuser = "DBUSER"
-	dbpass = "DBPASS"
-	dbname = "DBNAME"
+	dbhost     = "DBHOST"
+	dbport     = "DBPORT"
+	dbuser     = "DBUSER"
+	dbpass     = "DBPASS"
+	dbname     = "DBNAME"
+	testdbname = "TESTDBNAME"
 )
 
 // set up app db connection
@@ -36,6 +38,38 @@ func InitDb() *sql.DB {
 	return db
 }
 
+// set up test db connection
+func InitTestDb() *sql.DB {
+	dbConfig := dbConfig()
+	var err error
+	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		dbConfig[dbhost], dbConfig[dbport], dbConfig[dbuser], dbConfig[dbpass], dbConfig[dbname])
+
+	db, err = sql.Open("postgres", psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+	bTestDb = true
+	return db
+}
+
+// clean up test db
+func CleanupTestDb() {
+	if !bTestDb {
+		return
+	}
+	statementStr := `TRUNCATE address CASCADE`
+	_, err := db.Exec(statementStr)
+	if err != nil {
+		panic(err)
+	}
+	bTestDb = false
+}
+
 // load db config values from env
 func dbConfig() map[string]string {
 	conf := make(map[string]string)
@@ -48,6 +82,27 @@ func dbConfig() map[string]string {
 	password, ok := os.LookupEnv(dbpass)
 	checkVarOk(dbpass, ok)
 	name, ok := os.LookupEnv(dbname)
+	checkVarOk(dbname, ok)
+	conf[dbhost] = host
+	conf[dbport] = port
+	conf[dbuser] = user
+	conf[dbpass] = password
+	conf[dbname] = name
+	return conf
+}
+
+// load test db config values from env
+func dbTestConfig() map[string]string {
+	conf := make(map[string]string)
+	host, ok := os.LookupEnv(dbhost)
+	checkVarOk(dbhost, ok)
+	port, ok := os.LookupEnv(dbport)
+	checkVarOk(dbport, ok)
+	user, ok := os.LookupEnv(dbuser)
+	checkVarOk(dbuser, ok)
+	password, ok := os.LookupEnv(dbpass)
+	checkVarOk(dbpass, ok)
+	name, ok := os.LookupEnv(testdbname)
 	checkVarOk(dbname, ok)
 	conf[dbhost] = host
 	conf[dbport] = port

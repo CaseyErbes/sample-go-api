@@ -10,10 +10,15 @@ deps:
 
 build:
 	goose -dir "migrations" postgres "user=${DBUSER} password=${DBPASS} dbname=postgres_db sslmode=disable" up
+	goose -dir "migrations" postgres "user=${DBUSER} password=${DBPASS} dbname=postgres_test_db sslmode=disable" up
 	go build $(BUILD_FLAGS) ./...
 
 install: build
 	go install $(BUILD_FLAGS)
+
+test:
+	go clean -testcache
+	go test ./... -v -p 1
 
 runserver: install
 	./bin/sample-go-api
