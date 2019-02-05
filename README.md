@@ -39,7 +39,7 @@ This project uses a makefile, so make should be installed. Here's how:
 sudo apt-get install make
 ```
 
-Next, PostgreSQL must be installed. If you are using ubuntu, it can be installed with the following script:
+Next, PostgreSQL must be installed. If you are using Ubuntu, it can be installed with the following script:
 ```shell
 sudo apt-get install postgresql postgresql-contrib
 ```
@@ -49,10 +49,9 @@ Make sure PostgreSQL is running with this script:
 sudo service postgresql start
 ```
 
-If you are using a mac, install PostgreSQL with brew and get it running with these two lines:
+Then configure the postgres user password:
 ```shell
-brew install postgresql
-brew services start postgresql
+sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"
 ```
 
 Next, use the _init-db.sh_ script at the root of the project to initialize the databases that this project uses, like so:
@@ -60,7 +59,7 @@ Next, use the _init-db.sh_ script at the root of the project to initialize the d
 ./init-db.sh
 ```
 
-This can be run anytime you feel like resetting this project's databases.
+This can be run any time you feel like resetting this project's databases.
 
 Next, this project uses some go dependencies. The makefile has a list of all of the dependencies needed. To install them, run:
 ```shell
